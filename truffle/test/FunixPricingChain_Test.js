@@ -190,10 +190,57 @@ contract("Main Contract", function(accounts){
 
      }); // close describe
 
+       /**
+     * ===========================================================
+     * Test case #4: Update product infor  - Session Contract
+     * ===========================================================
+     */
+    describe("Update product Information by Admin", function(){
+        // Admin can update product information
+        // This action is only avaible in CREATED state
+        it("Admin can update product information", function(){
+            return sessionInstance.state().then(function(state){
+                assert.equal(state, session.State.CREATED, "Should be in CREATED state");
+            }).then(function(){
+                return sessionInstance.updateProductInfo(
+                    "Red Hat 1",
+                    "This hat for summer to protect our head!",
+                    ["ipfs://example1", "ipfs://example1"],   
+                    {from:accounts[0]}
+                ).then(function(){
+                    return sessionInstance.getProductInfo().then(function(result){
+                        //console.log(result);
+                        assert.equal(result[0], "Red Hat 1", "productName should be correct");
+                        assert.equal(result[1], "This hat for summer to protect our head!", "productDescription should be correct!");
+                        //console.log(result[2]);
+                    });
+                });
+            });
+        }); // close it
+        // Non-admin can not update product information
+        it("Non-admin can not update product information", function(){
+            return sessionInstance.updateProductInfo(
+                "Red Hat 1",
+                "This hat for summer to protect our head!",
+                ["ipfs://example1", "ipfs://example1"],   
+                {from:accounts[1]}
+            ).then(function(){
+                throw("Fail to update product information by non-admin");
+            }).catch(function(err){
+                if(err == "Fail to update product information by non-admin" ){
+                    assert(false);
+                }else{
+                    assert(true);
+                }
+            });
+        });
+        
+    }); // close describe
+
 
      /**
      * ===========================================================
-     * Test case #4: Register from session contract - Session Contract
+     * Test case #5: Register from session contract - Session Contract
      * ===========================================================
      */
     describe("Register", function(){
@@ -278,7 +325,7 @@ contract("Main Contract", function(accounts){
 
      /**
      * ===========================================================
-     * Test case #5: Start a pricing sessiont - Session Contract
+     * Test case #6: Start a pricing sessiont - Session Contract
      * ===========================================================
      */
     describe("Start a Pricing Session", function(){
@@ -318,7 +365,7 @@ contract("Main Contract", function(accounts){
 
      /**
      * ===========================================================
-     * Test case #6: Price a product - Session Contract
+     * Test case #7: Price a product - Session Contract
      * ===========================================================
      */
     describe("Price a product", function(){
@@ -387,7 +434,7 @@ contract("Main Contract", function(accounts){
 
     /**
      * ===========================================================
-     * Test case #7: Close a pricing session - Session Contract
+     * Test case #8: Close a pricing session - Session Contract
      * ===========================================================
      */
 
@@ -425,7 +472,7 @@ contract("Main Contract", function(accounts){
 
      /**
      * ===========================================================
-     * Test case #8: calculate a proposed price - Session Contract
+     * Test case #9: calculate a proposed price - Session Contract
      * ===========================================================
      */
     describe("Calculate a proposed price", function(){
@@ -465,7 +512,7 @@ contract("Main Contract", function(accounts){
 
     /**
      * ===========================================================
-     * Test case #9: Update final Price and calculate deviation of participants - Session Contract
+     * Test case #10: Update final Price and calculate deviation of participants - Session Contract
      * ===========================================================
      */
 
@@ -478,18 +525,21 @@ contract("Main Contract", function(accounts){
             }).then(function(){
                 return sessionInstance.calculateDeviation({from: accounts[0]})
                 .then(function(){
-                    return sessionInstance.sessionParticipants(0)
+                    return sessionInstance.getSessionParticipant(0)
                     .then(function(result){
                         // console.log(result);
+                        // console.log("=============================");
                         // console.log(result.newDeviation);
                         // check deviation from participant 0
-                        assert.equal(result.newDeviation, 30, "Should be equal to 30 from participant 0");
+                        assert.equal(result[0], accounts[1], "participantAddress should be equal accounts 1");
+                        assert.equal(result[1], 1500, "participantPrice should be equal to 1500");
+                        assert.equal(result[2], 30, "newDeviation should be equal to 30");
                     }).then(function(){
-                        return mainInstance.participantDetails(accounts[1])
+                        return mainInstance.getAParticipant(accounts[1])
                         .then(function(result){
                             //console.log(result);
                             // check updated deviation of participant from main contract
-                            assert.equal(result.deviation, 15, "Should be equal to 15 from participant 0");
+                            assert.equal(result[4], 15, "deviation should be equal to 15");
                         });
                     });
                 });       
@@ -512,5 +562,5 @@ contract("Main Contract", function(accounts){
         
     }); // close describe
 
-
+  
 }); // close contract
