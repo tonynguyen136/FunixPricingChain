@@ -86,7 +86,7 @@ contract Main is IMain{
      */
      function updateParticipantByUser(string memory _name, string  memory _email) public{
         IParticipant storage participant = participantDetails[msg.sender];
-        require(participant.account == msg.sender, "Entered account does not exist!!!");
+        require(participant.account == msg.sender, "Should be a participant address");
         participant.name = _name;
         participant.email = _email;
     }
@@ -111,12 +111,13 @@ contract Main is IMain{
      */
     function getAParticipant(address _participant) 
     public view onlyAdmin returns(address, string memory, string memory, uint256, uint256){
+        IParticipant storage participant = participantDetails[_participant];
         return(
-            participantDetails[_participant].account,
-            participantDetails[_participant].name,
-            participantDetails[_participant].email,
-            participantDetails[_participant].numSessionsPerformed,
-            participantDetails[_participant].deviation
+            participant.account,
+            participant.name,
+            participant.email,
+            participant.numSessionsPerformed,
+            participant.deviation
         );
     }
 

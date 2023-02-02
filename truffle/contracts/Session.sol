@@ -99,6 +99,22 @@ contract Session {
     }
     // TODO: Functions
     /**
+     * @dev Update production information before the session begins
+     * @param _productName: change the product name if any
+     * @param _productDescription: change the product description if any
+     * @param _productImages Change the list of images if any
+     */
+    function updateProductInfo(
+        string memory _productName,
+        string memory _productDescription,
+        string [] memory _productImages
+    ) public onlyAdmin stateCheck(State.CREATED){
+        productName = _productName;
+        productDescription = _productDescription;
+        productImages = _productImages;
+    }
+    
+    /**
      * @dev register participants to join a pricing session
      * Participants are less than 10 people
      */
@@ -213,10 +229,11 @@ contract Session {
       */
     function getSessionParticipant(uint index) public view 
     returns(address, uint256, uint256 ){
+        IsessionParticipant storage participant = sessionParticipants[index];
         return(
-            sessionParticipants[index].participantAddress,
-            sessionParticipants[index].participantPrice,
-            sessionParticipants[index].newDeviation
+            participant.participantAddress,
+            participant.participantPrice,
+            participant.newDeviation
         );
     }
 
@@ -230,26 +247,6 @@ contract Session {
             productImages
         );
     }
-
-    /**
-     * @dev Update production information before the session begins
-     * @param _productName: change the product name if any
-     * @param _productDescription: change the product description if any
-     * @param _productImages Change the list of images if any
-     */
-    function updateProductInfo(
-        string memory _productName,
-        string memory _productDescription,
-        string [] memory _productImages
-    ) public onlyAdmin stateCheck(State.CREATED){
-        productName = _productName;
-        productDescription = _productDescription;
-        productImages = _productImages;
-    }
-
-    
- 
-    
 
 
 }
