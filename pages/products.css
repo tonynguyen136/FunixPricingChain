@@ -17,3 +17,6 @@
 tr.active {
   background: lightskyblue !important;
 }
+.margin2{
+  margin-top: 10px;
+}

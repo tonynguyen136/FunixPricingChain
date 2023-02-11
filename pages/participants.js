@@ -6,23 +6,24 @@ const ParticipantRow = participant => (
     <td scope='row' class='text-center'>
       <img
         class='img-avatar img-thumbnail'
-        src={'https://robohash.org/' + participant.address}
+        src={'https://robohash.org/' + participant.account}
       ></img>
     </td>
     <td scope='row' class='align-middle'>
-      {participant.fullname}
+      {participant.name}
+      
     </td>
     <td scope='row' class='align-middle'>
       {participant.email}
     </td>
     <td scope='row' class='align-middle text-center'>
-      {participant.nSessions}
+      {participant.numSessionsPerformed}
     </td>
     <td scope='row' class='align-middle text-center'>
       {participant.deviation / 100} %
     </td>
     <td scope='row' class='align-middle text-center'>
-      <code>{participant.address}</code>
+      <code>{participant.account}</code>
     </td>
   </tr>
 );
@@ -47,15 +48,25 @@ const Participants = ({ match }) => ({ participants }) => (
           </tr>
         </thead>
         <tbody>
+         
           {(participants || []).map((p, i) => {
             p.no = i + 1;
+            //console.log(p);
             return ParticipantRow(p);
+            // return (
+            //   <ParticipantRow
+            //     participant = {p}
+            //   ></ParticipantRow>
+            // );
           })}
         </tbody>
       </table>
     </div>
-    {/* <div class='p-2 flex product-detail'></div> */}
   </div>
 );
 
 export { Participants };
+
+    // <div class='p-2 flex product-detail'>
+         
+    // </div>

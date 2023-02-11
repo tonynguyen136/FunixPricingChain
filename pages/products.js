@@ -3,44 +3,52 @@ import './products.css';
 
 const Fragment = (props, children) => children;
 
-const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
+const Product = ({ product, newProduct, input, createNewSession, isAdmin, fn }) => {
   let price;
+  let registeredAccount;
   return (
     <>
       {product ? (
         <div class='card product'>
           <div class='card-header'>
-            <strong>{product.name}</strong>
+            <strong>Price this product</strong>
           </div>
           <div class='card-body'>
             <img
               class='rounded float-left product-image'
               src={
-                product.image.startsWith('http')
-                  ? product.image
-                  : '//robohash.org/' + product.image + '?set=set4&bgset=bg2'
+                product.productImages.toString().startsWith('http')
+                  ? product.productImages.toString()
+                  : '//robohash.org/' + product.productImages + '?set=set4&bgset=bg2'
               }
             ></img>
-
             <dl class='row'>
-              <dt class='col-sm-4'>Name</dt>
+              <dt class='col-sm-4'>Product Name</dt>
               <dd class='col-sm-8'>
-                <h5>{product.name}</h5>
+                <h5>{product.productName}</h5>
               </dd>
 
               <dt class='col-sm-4'>Description</dt>
               <dd class='col-sm-8'>
-                <p>{product.description}</p>
+                <p>{product.productDescription}</p>
               </dd>
 
               <dt class='col-sm-4'>Proposed Price</dt>
               <dd class='col-sm-8'>
-                <p>$ {product.price / 100}</p>
+                <p>$ {product.proposedPrice}</p>
               </dd>
 
               <dt class='col-sm-4'>Status</dt>
               <dd class='col-sm-8'>
                 <p>{product.status}</p>
+              </dd>
+              <dt class='col-sm-4'>No Registered Participnats</dt>
+              <dd class='col-sm-8'>
+                <p>{product.noRegisteredParticipants}</p>
+              </dd>
+              <dt class='col-sm-4'>No Priced Participnats</dt>
+              <dd class='col-sm-8'>
+                <p>{product.noPricedParticipants}</p>
               </dd>
             </dl>
           </div>
@@ -48,35 +56,64 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
             <div class='card-footer'>
               <div class='input-group'>
                 <div class='input-group-prepend'>
+                
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('start')}
+                    onclick={e => fn({ action: 'Register Participants', data: registeredAccount })}
+                  >
+                    Register
+                  </button>
+                 
+                  <button
+                    class='btn btn-outline-primary'
+                    type='button'
+                    onclick={e => fn({ action: 'Start a pricing session', data: '' })}
                   >
                     Start
                   </button>
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('stop')}
+                    onclick={e => fn({ action: 'Closing session', data: '' })}
                   >
-                    Stop
+                    Closing
                   </button>
+                  <input
+                    type='text'
+                    class='form-control'
+                    id = 'register'
+                    placeholder='Account Address'
+                    oninput={e => (registeredAccount = e.target.value)}
+
+                  />
+                  
                 </div>
-                <input
-                  type='number'
-                  class='form-control'
-                  placeholder='price'
-                  oninput={e => (price = e.target.value)}
-                />
-                <div class='input-group-append'>
+                
+                <div class='input-group-append margin2'>
                   <button
                     class='btn btn-outline-primary'
                     type='button'
-                    onclick={e => fn('pricing', price)}
+                    onclick={e => fn({ action: 'Close and Calculate Proposed Price', data: '' })}
                   >
-                    Set price and close
+                    Close & Calculate Proposed Price
                   </button>
+                  
+                  
+                  <button
+                    class='btn btn-outline-primary'
+                    type='button'
+                    onclick={e => fn({ action: 'Set a final price and Update deviation', data: price })}
+                  >
+                    Set Final Price
+                  </button>
+
+                  <input
+                    type='number'
+                    class='form-control'
+                    placeholder='price'
+                    oninput={e => (price = e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -90,8 +127,12 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                   oninput={e => (price = e.target.value)}
                 />
                 <div class='input-group-append'>
-                  <button class='btn btn-primary' type='button'>
-                    Propose price
+                  <button 
+                  class='btn btn-primary' 
+                  type='button'
+                  onclick={e => fn({ action: 'Price a Product', data: price })}
+                  >
+                    Price this product
                   </button>
                 </div>
               </div>
@@ -113,10 +154,10 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                 <input
                   type='text'
                   class='form-control'
-                  id='name'
-                  value={newProduct.name}
+                  id='productName'
+                  value={newProduct.productName}
                   oninput={e => {
-                    input({ field: 'name', value: e.target.value });
+                    input({ field: 'productName', value: e.target.value });
                   }}
                 />
               </div>
@@ -130,10 +171,10 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                 <input
                   type='text'
                   class='form-control'
-                  id='description'
-                  value={newProduct.description}
+                  id='productDescription'
+                  value={newProduct.productDescription}
                   oninput={e => {
-                    input({ field: 'description', value: e.target.value });
+                    input({ field: 'productDescription', value: e.target.value });
                   }}
                 />
               </div>
@@ -147,11 +188,11 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
                 <input
                   type='text'
                   class='form-control'
-                  id='image'
+                  id='productImages'
                   placeholder='http://'
-                  value={newProduct.image}
+                  value={newProduct.productImages}
                   oninput={e => {
-                    input({ field: 'image', value: e.target.value });
+                    input({ field: 'productImages', value: e.target.value });
                   }}
                 />
               </div>
@@ -159,7 +200,7 @@ const Product = ({ product, newProduct, input, create, isAdmin, fn }) => {
           </div>
         </div>
         <div class='card-footer'>
-          <button type='submit' class='btn btn-primary' onclick={create}>
+          <button type='submit' class='btn btn-primary' onclick={createNewSession}>
             Create
           </button>
         </div>
@@ -174,15 +215,15 @@ const ProductRow = ({ product, index, select, currentIndex }) => (
     class={index === currentIndex ? 'active' : ''}
   >
     <th scope='row'>{product.no}</th>
-    <td>{product.name}</td>
-    <td>{product.description} </td>
-    <td>$ {product.price}</td>
+    <td>{product.productName}</td>
+    <td>{product.productDescription} </td>
+    <td>$ {product._finalPrice}</td>
     <td>{product.status}</td>
   </tr>
 );
 const Products = ({ match }) => (
   { newProduct, sessions, currentProductIndex, isAdmin },
-  { inputNewProduct, createProduct, selectProduct, sessionFn }
+  { inputNewProduct, createNewSession, selectProduct, sessionFn }
 ) => {
   return (
     <div class='d-flex w-100 h-100'>
@@ -193,7 +234,7 @@ const Products = ({ match }) => (
               <th scope='col'>#</th>
               <th scope='col'>Product</th>
               <th scope='col'>Description</th>
-              <th scope='col'>Proposed price</th>
+              <th scope='col'>Final price</th>
               <th scope='col'>Status</th>
             </tr>
           </thead>
@@ -218,7 +259,7 @@ const Products = ({ match }) => (
         <Product
           newProduct={newProduct}
           input={inputNewProduct}
-          create={createProduct}
+          createNewSession={createNewSession}
           product={sessions[currentProductIndex]}
           isAdmin={isAdmin}
           fn={sessionFn}
