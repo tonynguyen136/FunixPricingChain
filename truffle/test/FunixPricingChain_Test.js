@@ -29,7 +29,7 @@ contract("Main Contract", function(accounts){
                 mainContractAddress,
                 "Red Hat",
                 "This hat for summer to protect our head!",
-                ["ipfs://example"],
+                "ipfs://example",
                 txParams
             );
             assert(sessionInstance !== undefined, "Session contract should be deployed by admin!");
@@ -205,7 +205,7 @@ contract("Main Contract", function(accounts){
                 return sessionInstance.updateProductInfo(
                     "Red Hat 1",
                     "This hat for summer to protect our head!",
-                    ["ipfs://example1", "ipfs://example1"],   
+                    "ipfs://example1",   
                     {from:accounts[0]}
                 ).then(function(){
                     return sessionInstance.getProductInfo().then(function(result){
@@ -222,7 +222,7 @@ contract("Main Contract", function(accounts){
             return sessionInstance.updateProductInfo(
                 "Red Hat 1",
                 "This hat for summer to protect our head!",
-                ["ipfs://example1", "ipfs://example1"],   
+                "ipfs://example1",   
                 {from:accounts[1]}
             ).then(function(){
                 throw("Fail to update product information by non-admin");
@@ -523,7 +523,7 @@ contract("Main Contract", function(accounts){
             return sessionInstance.state().then(function(state){
                 assert.equal(state, session.State.CLOSED, "Should be in CLOSED state!");
             }).then(function(){
-                return sessionInstance.calculateDeviation({from: accounts[0]})
+                return sessionInstance.calculateDeviation(2166,{from: accounts[0]})
                 .then(function(){
                     return sessionInstance.getSessionParticipant(0)
                     .then(function(result){
@@ -547,7 +547,7 @@ contract("Main Contract", function(accounts){
         });
         // Negative-test: Non-admin can not calculate deviation
         it("Non-admin can not calculate deviation", function(){
-            return sessionInstance.calculateDeviation({from: accounts[1]})
+            return sessionInstance.calculateDeviation(2166,{from: accounts[1]})
             .then(function(){
                 throw("Failed to calculate deviation from non-admin");
             }).catch(function(err){
