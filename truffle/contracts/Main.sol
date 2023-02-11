@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 import "./Session.sol";
 
+
 contract Main is IMain{
 
     // Structure to hold details of participants
@@ -60,7 +61,7 @@ contract Main is IMain{
         participant .account = msg.sender;
         participant.name = _name;
         participant.email = _email;
-        //totalParticipants++; // total of participants increase 1 when signup successful
+        totalParticipants++; // total of participants increase 1 when signup successful
         participantAddr.push(msg.sender); // save participant address to a list
     }
     /**

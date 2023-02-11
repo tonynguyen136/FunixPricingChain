@@ -31,7 +31,7 @@ contract Session {
 
     string public productName; // Product name
     string public productDescription; // Product description
-    string [] public productImages; // A list of string, each presents as a specific image.
+    string public productImages; // specific image.
 
     uint256 public proposedPrice; // the price is proposed based on all given price and their's deviation
     uint256 public finalPrice; // when the session is ended, the final price is up to date
@@ -49,7 +49,8 @@ contract Session {
     IsessionParticipant [10] public sessionParticipants; // a list of participants of the session
     
     uint8 public participantCount = 0; // counter of participants 
-
+    uint8 public joinedParticipantCount = 0; // counter of participant who has joined
+    
     // State of the pricing session 
     enum State {INITIATED, CREATED, STARTED, CLOSING, CLOSED}
     State public state = State.INITIATED; // Initiated state for a session
@@ -60,7 +61,7 @@ contract Session {
         address _mainContract,
         string memory _productName,
         string memory _productDescription,
-        string [] memory _productImages
+        string memory _productImages
     ){
         // Get Main Contract instance
         mainContract = _mainContract;
@@ -107,7 +108,7 @@ contract Session {
     function updateProductInfo(
         string memory _productName,
         string memory _productDescription,
-        string [] memory _productImages
+        string  memory _productImages
     ) public onlyAdmin stateCheck(State.CREATED){
         productName = _productName;
         productDescription = _productDescription;
@@ -158,6 +159,9 @@ contract Session {
             sessionParticipantsDetails[msg.sender].registered == true, 
             "Only the participants who registered by admin can price a product!" 
         );
+        if(sessionParticipantsDetails[msg.sender].sessionJoined == false){
+            joinedParticipantCount++; // increase 1 time for one address for the 1st time// 2nd times not count
+        }
         sessionParticipantsDetails[msg.sender].participantPrice = _price;
         sessionParticipantsDetails[msg.sender].sessionJoined = true;
         // Update the same to sessionParticipants array (from sessionParticipantsDetails[msg.sender])
@@ -199,10 +203,11 @@ contract Session {
     
     /**
      * @dev calculate the deviation of a participant based on final price and proposed price
-     * Update proposed price to final price
+     * @param _finalPrice set a final price based on final Price and update deviation
+     * Set a final price
      */
-    function calculateDeviation() public onlyAdmin stateCheck(State.CLOSED){
-        finalPrice = proposedPrice; // update final price
+    function calculateDeviation(uint256 _finalPrice) public onlyAdmin stateCheck(State.CLOSED){
+        finalPrice = _finalPrice; // update final price
         for(uint i =0; i < participantCount; i++){
             if(sessionParticipants[i].sessionJoined){
                 if(finalPrice >= sessionParticipants[i].participantPrice){
@@ -240,7 +245,7 @@ contract Session {
     /**
      * @dev get the product information
      */
-    function getProductInfo() public view returns(string memory, string memory, string[] memory){
+    function getProductInfo() public view returns(string memory, string memory, string memory){
         return(
             productName,
             productDescription,
