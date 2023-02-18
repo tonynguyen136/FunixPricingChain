@@ -167,6 +167,7 @@ function FunixPricingChain(){
           case 'Register Participants': 
               // Handle event when Admin registers participants to join this session
               if(stateSession == 1){
+                alert("Checking" + stateSession + data);
                 await sessionContract.methods.register(data).send({from: state.account});
                 alert(data + " address is registered successfully!!!");
                 actions.getSessions();
@@ -200,8 +201,14 @@ function FunixPricingChain(){
               if(stateSession == 1){
                 alert("Can't not price a product in CREATED state");
               } else if(stateSession ==2){
-                await sessionContract.methods.priceProduct(data).send({from: state.account});
-                alert("Price a producet successfully!");
+                try{
+                  await sessionContract.methods.priceProduct(data).send({from: state.account});
+                  actions.getSessions();
+                  alert("Price a producet successfully!");
+                }catch(err){
+                  alert("Account was not registered to this session, please try later!")
+                }
+                
               } else if(stateSession ==3){
                 alert("Can't not price a product in CLOSING state");
               }else{
@@ -234,9 +241,14 @@ function FunixPricingChain(){
                 //alert("Closing");
                 alert("Can't not close a session in STARTED state");
               }else if(stateSession ==3){
-                await sessionContract.methods.calculateProposedPrice().send({from: state.account});
-                alert("Session closed and Calculation finished!");
-                actions.getSessions();
+                try{
+                  await sessionContract.methods.calculateProposedPrice().send({from: state.account});
+                  alert("Session closed and Calculation finished!");
+                  actions.getSessions();
+                }catch(err){
+                  alert("There are no participants who joined to this session!")
+                }
+               
               } else{
                 alert("Can't not close a session in CLOSED state");
               }
@@ -254,6 +266,7 @@ function FunixPricingChain(){
                   await sessionContract.methods.calculateDeviation(data).send({from: state.account});
                   alert("Set a final price and Update deviation of participants succefully!")
                   actions.getSessions();
+                  actions.getParticipants();
                 }
                 break;
         }
@@ -297,14 +310,22 @@ function FunixPricingChain(){
         console.log("No of participants:" + nParticipant);
         // TODO: Load all participants from Main contract.
         for(let index = 0; index < nParticipant; index++){
-           // Get participant address
+          //
+          // Get participant address
           let participantAddress = await contractFunctions.iParticipants(index)();
+          console.log('===================');
           console.log(participantAddress);
-          // get structure of participant
-          let participant = await contractFunctions.participants(participantAddress)();
-          console.log(participant);
-          participants.push(participant);
-          
+          console.log(state.account);
+          console.log("1111");
+          console.log(state);
+          console.log('===================');
+          // admin can view all and current account only view their own account
+          if(state.isAdmin || state.account === participantAddress){
+            let participant = await contractFunctions.participants(participantAddress)();
+            console.log(participant);
+            participants.push(participant);
+          }
+            
         }
 
         // One participant should contain { address, fullname, email, nSession and deviation }
@@ -360,21 +381,29 @@ function FunixPricingChain(){
         console.log("email" +  email);
         console.log("numSessionsPerformed" +  numSessionsPerformed);
         console.log("deviation" +  deviation);
+        try{
+
         //update participants infomation -  admin role
-        await contractFunctions.updateParticipantByAdmin(
-          account, name, email, numSessionsPerformed, deviation
-          )({from: state.account});
-        // Update profile of user - account
-        const profile = await contractFunctions.participants(account)();
-        console.log(state.account);
-        actions.setProfile(profile);
+          await contractFunctions.updateParticipantByAdmin(
+            account, name, email, numSessionsPerformed, deviation
+            )({from: state.account});
+             // Update profile of user - account
+          const profile = await contractFunctions.participants(account)();
+          console.log(state.account);
+          //actions.setProfile(profile);
+          //actions.getAccount();
+        }catch(err){
+          alert("Account does not exits for updating. Please correct it!");
+        }
+       
         // clear input field
         document.getElementById('account').value = '';
         document.getElementById('name').value = '';
         document.getElementById('email').value = '';
         document.getElementById('numSessionsPerformed').value = '';
         document.getElementById('deviation').value = '';
-
+        actions.getParticipants();
+        
       },
 
       // Update participnats by User
@@ -390,6 +419,7 @@ function FunixPricingChain(){
         // clear input
         document.getElementById('_name').value = '';
         document.getElementById('_email').value = '';
+        actions.getParticipants();
       },
       // Get sessions
       getSessions: () => async (state, actions) => {
@@ -434,15 +464,20 @@ function FunixPricingChain(){
               status = "Closed";
               break;
           }
-          // get number of participants who registered;
-          let noRegisteredParticipants = await contract.methods.participantCount().call();
-          // get number of participnats who has priced a product - joinedParticipantCount
-          let noPricedParticipants = await contract.methods.joinedParticipantCount().call();
-          // get proposed price after finishing the session
-          let proposedPrice = await contract.methods.proposedPrice().call();
-          // get state of Session from Session contract
-          let _finalPrice = await contract.methods.finalPrice().call();
-          sessions.push({ id, productName, productDescription, finalPrice, contract, productImages,status,noRegisteredParticipants,noPricedParticipants,proposedPrice,_finalPrice });
+          // admin can view all and non-admin only can view Closed and Started
+          if(state.isAdmin || stateSession == 2 || stateSession ==3 || stateSession ==4){
+            
+              // get number of participants who registered;
+            let noRegisteredParticipants = await contract.methods.participantCount().call();
+            // get number of participnats who has priced a product - joinedParticipantCount
+            let noPricedParticipants = await contract.methods.joinedParticipantCount().call();
+            // get proposed price after finishing the session
+            let proposedPrice = await contract.methods.proposedPrice().call();
+            // get state of Session from Session contract
+            let _finalPrice = await contract.methods.finalPrice().call();
+            sessions.push({ id, productName, productDescription, finalPrice, contract, productImages,status,noRegisteredParticipants,noPricedParticipants,proposedPrice,_finalPrice });
+          }
+          
         }
         actions.setSessions(sessions);
       },
@@ -463,9 +498,14 @@ function FunixPricingChain(){
         <body
           class='app sidebar-show sidebar-fixed'
           oncreate={() => {
-            getAccount();
-            getParticipants();
-            getSessions();
+            getAccount().then(function(){
+              getParticipants();
+              
+            }).then(function(){
+              getSessions();
+            });
+            
+            
           }}
         >
           <div class='app-body'>
