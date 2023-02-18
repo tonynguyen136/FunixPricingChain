@@ -23,6 +23,9 @@ Add new Network by selecting `Custom RPC` with corresponding RPC Address, Port a
 # Deploy and Configure Frontend
 
 Use truffle to complie and deploy the Main Contract.
+ + truffle compile
+ + truffle migrate --reset
+ + truffle test (if needed)
 Replace the Main Contract Address in `config.js` with new deployed address.
 
 Execute `npm start` to run frontend.
