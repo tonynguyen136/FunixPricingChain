@@ -26,6 +26,7 @@ Use truffle to complie and deploy the Main Contract.
  + truffle compile
  + truffle migrate --reset
  + truffle test (if needed)
+ 
 Replace the Main Contract Address in `config.js` with new deployed address.
 
 Execute `npm start` to run frontend.
