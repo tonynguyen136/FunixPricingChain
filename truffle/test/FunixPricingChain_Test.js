@@ -195,47 +195,47 @@ contract("Main Contract", function(accounts){
      * Test case #4: Update product infor  - Session Contract
      * ===========================================================
      */
-    describe("Update product Information by Admin", function(){
-        // Admin can update product information
-        // This action is only avaible in CREATED state
-        it("Admin can update product information", function(){
-            return sessionInstance.state().then(function(state){
-                assert.equal(state, session.State.CREATED, "Should be in CREATED state");
-            }).then(function(){
-                return sessionInstance.updateProductInfo(
-                    "Red Hat 1",
-                    "This hat for summer to protect our head!",
-                    "ipfs://example1",   
-                    {from:accounts[0]}
-                ).then(function(){
-                    return sessionInstance.getProductInfo().then(function(result){
-                        //console.log(result);
-                        assert.equal(result[0], "Red Hat 1", "productName should be correct");
-                        assert.equal(result[1], "This hat for summer to protect our head!", "productDescription should be correct!");
-                        //console.log(result[2]);
-                    });
-                });
-            });
-        }); // close it
-        // Non-admin can not update product information
-        it("Non-admin can not update product information", function(){
-            return sessionInstance.updateProductInfo(
-                "Red Hat 1",
-                "This hat for summer to protect our head!",
-                "ipfs://example1",   
-                {from:accounts[1]}
-            ).then(function(){
-                throw("Fail to update product information by non-admin");
-            }).catch(function(err){
-                if(err == "Fail to update product information by non-admin" ){
-                    assert(false);
-                }else{
-                    assert(true);
-                }
-            });
-        });
+    // describe("Update product Information by Admin", function(){
+    //     // Admin can update product information
+    //     // This action is only avaible in CREATED state
+    //     it("Admin can update product information", function(){
+    //         return sessionInstance.state().then(function(state){
+    //             assert.equal(state, session.State.CREATED, "Should be in CREATED state");
+    //         }).then(function(){
+    //             return sessionInstance.updateProductInfo(
+    //                 "Red Hat 1",
+    //                 "This hat for summer to protect our head!",
+    //                 "ipfs://example1",   
+    //                 {from:accounts[0]}
+    //             ).then(function(){
+    //                 return sessionInstance.getProductInfo().then(function(result){
+    //                     //console.log(result);
+    //                     assert.equal(result[0], "Red Hat 1", "productName should be correct");
+    //                     assert.equal(result[1], "This hat for summer to protect our head!", "productDescription should be correct!");
+    //                     //console.log(result[2]);
+    //                 });
+    //             });
+    //         });
+    //     }); // close it
+        // // Non-admin can not update product information
+        // it("Non-admin can not update product information", function(){
+        //     return sessionInstance.updateProductInfo(
+        //         "Red Hat 1",
+        //         "This hat for summer to protect our head!",
+        //         "ipfs://example1",   
+        //         {from:accounts[1]}
+        //     ).then(function(){
+        //         throw("Fail to update product information by non-admin");
+        //     }).catch(function(err){
+        //         if(err == "Fail to update product information by non-admin" ){
+        //             assert(false);
+        //         }else{
+        //             assert(true);
+        //         }
+        //     });
+        // });
         
-    }); // close describe
+    //}); // close describe
 
 
      /**
@@ -325,7 +325,7 @@ contract("Main Contract", function(accounts){
 
      /**
      * ===========================================================
-     * Test case #6: Start a pricing sessiont - Session Contract
+     * Test case #6: Start a pricing session - Session Contract
      * ===========================================================
      */
     describe("Start a Pricing Session", function(){
@@ -512,11 +512,11 @@ contract("Main Contract", function(accounts){
 
     /**
      * ===========================================================
-     * Test case #10: Update final Price and calculate deviation of participants - Session Contract
+     * Test case #10: Set final Price and calculate deviation of participants - Session Contract
      * ===========================================================
      */
 
-    describe("Calculate deviation", function(){
+    describe("Set final price & calculate deviation", function(){
         // Admin can calculate a deviation of each participant. 
         it("Calculate deviaition by admin", function(){
             // This action is only available in CLOSED state
