@@ -136,12 +136,18 @@ const Product = ({ product, newProduct, input, createNewSession, isAdmin, fn }) 
                   </button>
                 </div>
               </div>
+
+
             </div>
+
           )}
         </div>
       ) : (
         <></>
       )}
+
+      <div>
+        {isAdmin ? (    
       <div class='card'>
         <div class='card-header'>
           <strong>Create new session</strong>
@@ -204,7 +210,13 @@ const Product = ({ product, newProduct, input, createNewSession, isAdmin, fn }) 
             Create
           </button>
         </div>
+      </div>):(<>
+        
+      </>)}
       </div>
+
+      
+  
     </>
   );
 };

@@ -42,7 +42,7 @@ const Profile = ({ profile, enterParticipant, inputProfile, isAdmin }) => {
               <b>Accuracy</b>
             </small>
           </div>
-          <small>{profile.deviation / 100}%</small>
+          <small>{profile.deviation}%</small>
         </li>
       </>
     ) : (
@@ -92,7 +92,22 @@ const Profile = ({ profile, enterParticipant, inputProfile, isAdmin }) => {
   }else if(isAdmin){
     return hasProfile ? (
       <>
-        
+         <li class='nav-item px-3 mb-2'>
+          <div>
+            <small class='text-muted'>
+              <b>Full name</b>
+            </small>
+          </div>
+          <small>{profile.name}</small>
+        </li>
+        <li class='nav-item px-3 mb-2'>
+          <div>
+            <small class='text-muted'>
+              <b>Email</b>
+            </small>
+          </div>
+          <small>{profile.email}</small>
+        </li>
       </>
     ) : (
       <>
@@ -153,7 +168,7 @@ const UpdateUserInfo = ({profile, updateParticipantByAdmin, updateParticipantByU
     return(
       <>
         <div>
-        <li class='nav-title'>Update User by Admin</li>
+        <li class='nav-title'>User Update by Admin</li>
         <li class='nav-item px-3 mb-2'>
           <div>
             <small class='text-muted'>
@@ -225,7 +240,7 @@ const UpdateUserInfo = ({profile, updateParticipantByAdmin, updateParticipantByU
             type='button'
             onclick={updateParticipantByAdmin}
           >
-             Update User
+             Update
           </button>
         </li>
         </div>
@@ -236,7 +251,7 @@ const UpdateUserInfo = ({profile, updateParticipantByAdmin, updateParticipantByU
     return(
       <>
         <div>
-        <li class='nav-title'>User Updates Information</li>
+        <li class='nav-title'>User Information Update</li>
         <li class='nav-item px-3 mb-2'>
           <div>
             <small class='text-muted'>
@@ -269,7 +284,7 @@ const UpdateUserInfo = ({profile, updateParticipantByAdmin, updateParticipantByU
             type='button'
             onclick={updateParticipantByUser}
           >
-            Update User 
+            Update 
           </button>
         </li>
         </div>

@@ -20,7 +20,7 @@ const ParticipantRow = participant => (
       {participant.numSessionsPerformed}
     </td>
     <td scope='row' class='align-middle text-center'>
-      {participant.deviation / 100} %
+      {participant.deviation} %
     </td>
     <td scope='row' class='align-middle text-center'>
       <code>{participant.account}</code>
@@ -51,13 +51,7 @@ const Participants = ({ match }) => ({ participants }) => (
          
           {(participants || []).map((p, i) => {
             p.no = i + 1;
-            //console.log(p);
             return ParticipantRow(p);
-            // return (
-            //   <ParticipantRow
-            //     participant = {p}
-            //   ></ParticipantRow>
-            // );
           })}
         </tbody>
       </table>
